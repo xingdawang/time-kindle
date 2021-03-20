@@ -17,7 +17,7 @@ body {
 }
 .local-time, #current-local-time {
 	padding-top: 5%;
-	font-size: 15rem;
+	font-size: 12rem;
 }
 
 .local-time, #current-local-date {
@@ -58,17 +58,17 @@ body {
 		var currentDay = formatTime(currentLocalTime.getDate())
 		var currentMonth = formatTime(currentLocalTime.getMonth() + 1)
 		var currentYear = currentLocalTime.getFullYear()
+		var dayName = currentLocalTime.toString().split(' ')[0];
 		var currentHour = formatTime(currentLocalTime.getHours())
 		var currentMinute = formatTime(currentLocalTime.getMinutes())
 		var currentSecond = formatTime(currentLocalTime.getSeconds())
 		document.getElementById("current-local-time").innerHTML = currentHour + ":" + currentMinute + ":" + currentSecond
-		document.getElementById("current-local-date").innerHTML = currentDay + "/" + currentMonth + "/" + currentYear
+		document.getElementById("current-local-date").innerHTML = currentDay + "/" + currentMonth + "/" + currentYear + " (" + dayName + ")"
 
 		// Calculate Beijing Time according to local Irish time, be careful summer time.
 		var localTimeZoneDiffer = currentLocalTime.getTimezoneOffset();
 		// UTC+8 = -480 (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset)
 		var UTC8Differ = ( -480 - localTimeZoneDiffer) / 60
-		console.log(localTimeZoneDiffer)
 		var beijingHour = formatTime((currentHour - UTC8Differ) % 24)
 		document.getElementById("current-beijing-time").innerHTML = beijingHour + ":" + currentMinute + ":" + currentSecond
 	}
