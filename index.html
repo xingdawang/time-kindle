@@ -12,7 +12,6 @@ body {
     -webkit-transform:rotate(90deg); 
     -moz-transform:rotate(90deg); 
     -o-transform:rotate(90deg);
-    padding-left: 3%;
 	color: black;
 	text-align: center;
 }
@@ -64,8 +63,8 @@ body {
 		var currentHour = formatTime(currentLocalTime.getHours())
 		var currentMinute = formatTime(currentLocalTime.getMinutes())
 		var currentSecond = formatTime(currentLocalTime.getSeconds())
-		document.getElementById("current-local-time").innerHTML = currentHour + ":" + currentMinute + ":" + currentSecond
-		document.getElementById("current-local-date").innerHTML = currentDay + "/" + currentMonth + "/" + currentYear + " (" + dayName + ")"
+		document.getElementById("current-local-time").innerHTML = " " + currentHour + ":" + currentMinute + ":" + currentSecond
+		document.getElementById("current-local-date").innerHTML = "    " + currentDay + "/" + currentMonth + "/" + currentYear + " (" + dayName + ")"
 
 		// Calculate Beijing Time according to local Irish time, be careful summer time.
 		var localTimeZoneDiffer = currentLocalTime.getTimezoneOffset();
