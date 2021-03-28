@@ -3,82 +3,150 @@
 <head>
 	<title></title>
 	<style type="text/css">
-		body {
-  color: #888;
-  background: #262626;
-  margin: 0;
-  padding: 40px;
-  text-align: center;
-  font-family: "helvetica Neue", Helvetica, Arial, sans-serif;
-}
+		@font-face {
+			font-family: "ds-digital";
+			src: url("./DS-DIGI.TTF");
+		}
 
-#canvas {
-  width: 150px;
-  height: 300px;
-  position: absolute;
-  top: 150px;
-  left: 45%;
-  text-align: center;
-}
+		body {
+			background: #000;
+			margin: 0;
+			padding: 40px;
+			text-align: center;
+			font-family: "ds-digital";
+		}
+
+		.time {
+			color: white;
+			width: 80%;
+			display: inline-block;
+			text-align: left;
+		}
+
+		#current-local-date{
+			font-size: 10vw;
+		}
+
+		#current-local-time {
+			font-size: 27vw;
+			width: 80%;
+			display: inline-block;
+		}
+		#current-local-second {
+			font-size: 80px;
+			width: 10%;
+			display: inline-block;
+		}
+
+		#canvas {
+			width: 100px;
+			height: 300px;
+			display: inline-block;
+			padding-top: 3%;
+			text-align: center;
+		}
 	</style>
 </head>
 <body>
-<h1>VU meter from mic input (getUserMedia API)</h1>
-<canvas id="canvas" width="150" height="300"></canvas>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<div class="time">
+		<div id="current-local-date"></div>
+		<div class='local-time'>
+			<div id="current-local-time"></div>
+			<div id='current-local-second'></div>
+		</div>
+	</div>
+	<canvas id="canvas" width="100" height="300"></canvas>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
+	canvas_width = 100;
+	canvas_height = 300;
 	navigator.getUserMedia = navigator.getUserMedia ||
-  navigator.webkitGetUserMedia ||
-  navigator.mozGetUserMedia ||
-  navigator.mediaDevices.getUserMedia;
-if (navigator.getUserMedia) {
-  navigator.getUserMedia({
-      audio: true
-    },
-    function(stream) {
-      audioContext = new AudioContext();
-      analyser = audioContext.createAnalyser();
-      microphone = audioContext.createMediaStreamSource(stream);
-      javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+	navigator.webkitGetUserMedia ||
+	navigator.mozGetUserMedia;
+	if (navigator.getUserMedia) {
+		navigator.getUserMedia({
+				audio: true
+			},
+			function(stream) {
+				audioContext = new AudioContext();
+				analyser = audioContext.createAnalyser();
+				microphone = audioContext.createMediaStreamSource(stream);
+				javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
 
-      analyser.smoothingTimeConstant = 0.8;
-      analyser.fftSize = 1024;
+				analyser.smoothingTimeConstant = 0.8;
+				analyser.fftSize = 1024;
 
-      microphone.connect(analyser);
-      analyser.connect(javascriptNode);
-      javascriptNode.connect(audioContext.destination);
+				microphone.connect(analyser);
+				analyser.connect(javascriptNode);
+				javascriptNode.connect(audioContext.destination);
 
-      canvasContext = $("#canvas")[0].getContext("2d");
+				canvasContext = $("#canvas")[0].getContext("2d");
 
-      javascriptNode.onaudioprocess = function() {
-          var array = new Uint8Array(analyser.frequencyBinCount);
-          analyser.getByteFrequencyData(array);
-          var values = 0;
+				javascriptNode.onaudioprocess = function() {
+						var array = new Uint8Array(analyser.frequencyBinCount);
+						analyser.getByteFrequencyData(array);
+						var values = 0;
 
-          var length = array.length;
-          for (var i = 0; i < length; i++) {
-            values += (array[i]);
-          }
+						var length = array.length;
+						for (var i = 0; i < length; i++) {
+							values += (array[i]);
+						}
 
-          var average = values / length;
+						var average = values / length * 2;
 
-//          console.log(Math.round(average - 40));
+						// console.log(average);
 
-          canvasContext.clearRect(0, 0, 150, 300);
-          canvasContext.fillStyle = '#BadA55';
-          canvasContext.fillRect(0, 300 - average, 150, 300);
-          canvasContext.fillStyle = '#262626';
-          canvasContext.font = "48px impact";
-          canvasContext.fillText(Math.round(average - 40), -2, 300);
+						canvasContext.clearRect(0, 0, canvas_width, canvas_height);
+						gradient = canvasContext.createLinearGradient(0, 0, 0, canvas_height);
+						gradient.addColorStop(0.9, "violet");
+						gradient.addColorStop(0.75, "indigo");
+						gradient.addColorStop(0.60, 'blue');
+						gradient.addColorStop(0.45, "green");
+						gradient.addColorStop(0.30, "yellow");
+						gradient.addColorStop(0.15, "orange");
+						gradient.addColorStop(0.05, 'red');
+						canvasContext.fillStyle = gradient;
+						// x(upper-left conor), y(upper-left conor), width, height
+						canvasContext.fillRect(0, canvas_height - average - 50, canvas_width, average);
+						canvasContext.fillStyle = '#fff';
+						canvasContext.font = "40px ds-digital";
+						canvasContext.fillText(Math.floor(average / 2), 30, canvas_height);
 
-        } // end fn stream
-    },
-    function(err) {
-      console.log("The following error occured: " + err.name)
-    });
-} else {
-  console.log("getUserMedia not supported");
-}
+					} // end fn stream
+			},
+			function(err) {
+				console.log("The following error occured: " + err.name)
+			});
+	} else {
+		console.log("getUserMedia not supported");
+	}
+
+
+	function updateUI () {
+		setInterval(updateTime, 1000)
+	}
+
+	function formatTime(value) {
+		return value < 10 ? "0" + value : value
+	}
+
+	function updateTime() {
+		// Dublin time
+		var currentLocalTime = new Date()
+		var currentDay = formatTime(currentLocalTime.getDate())
+		var currentMonth = formatTime(currentLocalTime.getMonth() + 1)
+		var currentYear = currentLocalTime.getFullYear()
+		var dayName = currentLocalTime.toString().split(' ')[0];
+		var currentHour = formatTime(currentLocalTime.getHours())
+		var currentMinute = formatTime(currentLocalTime.getMinutes())
+		var currentSecond = formatTime(currentLocalTime.getSeconds())
+		document.getElementById("current-local-time").innerHTML = currentHour + ":" + currentMinute
+		document.getElementById("current-local-second").innerHTML = currentSecond
+		document.getElementById("current-local-date").innerHTML = currentYear + "-" + currentMonth + "-" + currentDay + " " + dayName
+	}
+
+	updateTime()
+	updateUI()
 </script>
 </body>
 </html>
