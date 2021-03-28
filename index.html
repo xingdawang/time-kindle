@@ -106,11 +106,12 @@
 						gradient.addColorStop(0.15, "orange");
 						gradient.addColorStop(0.05, 'red');
 						canvasContext.fillStyle = gradient;
+						if (average / 2 >= 0.5) {
 						// x(upper-left conor), y(upper-left conor), width, height
 						canvasContext.fillRect(0, canvas_height - average - 50, canvas_width, average);
 						canvasContext.fillStyle = '#fff';
 						canvasContext.font = "40px ds-digital";
-						if (Math.floor(average / 2) != 0) {
+						
 							canvasContext.fillText(Math.floor(average / 2), 30, canvas_height);
 						}
 
