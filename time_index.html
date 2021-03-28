@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>time for iOS 5.1</title>
+<style>
+body {
+	background-color: white
+}
+
+.time {
+	transform:rotate(90deg); 
+	-webkit-transform:rotate(90deg); 
+	-moz-transform:rotate(90deg); 
+	-o-transform:rotate(90deg);
+	color: black;
+	text-align: center;
+}
+.local-time, #current-local-time {
+	padding-left: 80px;
+	padding-top: 5%;
+	font-size: 12rem;
+}
+
+.local-time, #current-local-date {
+	padding-left: 150px;
+	font-size: 4rem;
+	padding-bottom: 10%;
+}
+
+.beijing-time, #current-beijing-time {
+	font-size: 4rem;
+}
+</style>
+</head>
+<body>
+
+<div class="time">
+	<!-- <div class="local-time">Dublin</div> -->
+		<div id="current-local-time"></div>
+		<div id="current-local-date"></div>
+		<div class="beijing-time">Beijing</div>
+		<div id="current-beijing-time"></div>
+</div>
+
+
+<script type="text/javascript">
+
+	function updateUI () {
+		setInterval(updateTime, 60 * 1000)
+	}
+
+	function formatTime(value) {
+		return value < 10 ? "0" + value : value
+	}
+
+	function updateTime() {
+		// Dublin time
+		var currentLocalTime = new Date()
+		var currentDay = formatTime(currentLocalTime.getDate())
+		var currentMonth = formatTime(currentLocalTime.getMonth() + 1)
+		var currentYear = currentLocalTime.getFullYear()
+		var dayName = currentLocalTime.toString().split(' ')[0];
+		var currentHour = formatTime(currentLocalTime.getHours())
+		var currentMinute = formatTime(currentLocalTime.getMinutes())
+		document.getElementById("current-local-time").innerHTML = currentHour + ":" + currentMinute
+		document.getElementById("current-local-date").innerHTML = currentDay + "/" + currentMonth + "/" + currentYear + " (" + dayName + ")"
+
+		// Calculate Beijing Time according to local Irish time, be careful summer time.
+		var localTimeZoneDiffer = currentLocalTime.getTimezoneOffset();
+		// UTC+8 = -480 (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset)
+		var UTC8Differ = ( -480 - localTimeZoneDiffer) / 60
+		var beijingHour = formatTime((currentHour - UTC8Differ) % 24)
+		document.getElementById("current-beijing-time").innerHTML = beijingHour + ":" + currentMinute
+	}
+
+	updateTime()
+	updateUI()
+	
+</script>
+</body>
+</html>
