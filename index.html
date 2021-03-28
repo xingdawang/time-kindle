@@ -110,7 +110,9 @@
 						canvasContext.fillRect(0, canvas_height - average - 50, canvas_width, average);
 						canvasContext.fillStyle = '#fff';
 						canvasContext.font = "40px ds-digital";
-						canvasContext.fillText(Math.floor(average / 2), 30, canvas_height);
+						if (Math.floor(average / 2) != 0) {
+							canvasContext.fillText(Math.floor(average / 2), 30, canvas_height);
+						}
 
 					} // end fn stream
 			},
